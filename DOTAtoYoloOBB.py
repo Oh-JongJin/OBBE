@@ -1,7 +1,9 @@
 import os
 import cv2
 import numpy as np
+
 from pathlib import Path
+from rennips import rennips
 
 
 def convert_dota_to_yolo_obb(label_path, img_path):
@@ -34,11 +36,29 @@ def convert_dota_to_yolo_obb(label_path, img_path):
 
             # Extract coordinates and class info
             x1, y1, x2, y2, x3, y3, x4, y4 = map(float, parts[:8])
-            class_name = parts[9]
+            class_name = parts[8].replace("-", " ")
             difficult = int(parts[-1])
 
             # Convert class name to index
-            class_index = 0 if class_name == "small-vehicle" else 1  # large-vehicle
+            classes = {
+                "plane": 0,
+                "ship": 1,
+                "storage tank": 2,
+                "baseball diamond": 3,
+                "tennis court": 4,
+                "basketball court": 5,
+                "ground track field": 6,
+                "harbor": 7,
+                "bridge": 8,
+                "large vehicle": 9,
+                "small vehicle": 10,
+                "helicopter": 11,
+                "roundabout": 12,
+                "soccer ball field": 13,
+                "swimming pool": 14,
+                "container crane": 15
+            }
+            class_index = classes[class_name]
 
             # Calculate remaining coordinates for rectangle
             # x3, y3 = x2, y2  # bottom-right
@@ -78,7 +98,7 @@ def process_dataset(image_dir, label_dir, output_dir):
 
     print(f"Found {total_files} label files to process...")
 
-    for label_file in label_files:
+    for label_file in rennips(label_files, mode='simple'):
         # Construct paths
         label_path = os.path.join(label_dir, label_file)
         image_file = label_file.replace('.txt', '.png')  # Adjust extension if needed
@@ -110,9 +130,9 @@ def process_dataset(image_dir, label_dir, output_dir):
         else:
             failed_files += 1
 
-        # Print progress
-        if processed_files % 100 == 0:
-            print(f"Processed {processed_files}/{total_files} files...")
+        # # Print progress
+        # if processed_files % 100 == 0:
+        #     print(f"Processed {processed_files}/{total_files} files...")
 
     print(f"\nConversion completed!")
     print(f"Successfully processed: {processed_files} files")
