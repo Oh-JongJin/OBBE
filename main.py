@@ -52,14 +52,15 @@ class PolygonViewer(QMainWindow):
     def __init__(self, label_dir, image_dir):
         super().__init__()
         self.label_files = sorted([f for f in os.listdir(label_dir) if f.endswith('.txt')])
-        self.image_files = sorted([f for f in os.listdir(image_dir) if f.endswith('.jpg')])
+        self.image_files = sorted([f for f in os.listdir(image_dir) if f.endswith('.png')])
         
         self.current_datetime = None
         self.settings = QSettings("my", "index")
-        if self.settings.value("index") is not None:
-            self.current_index = self.settings.value("index")
-        else:
-            self.current_index = 0
+        # if self.settings.value("index") is not None:
+        #     self.current_index = self.settings.value("index")
+        # else:
+        #     self.current_index = 0
+        self.current_index = 0
         self.label_dir = label_dir
         self.image_dir = image_dir
         
@@ -77,6 +78,7 @@ class PolygonViewer(QMainWindow):
         self.initUI()
 
     def load_current_file(self):
+        print(self.current_index)
         image_path = os.path.join(self.image_dir, self.image_files[self.current_index])
         # label_path = os.path.join(self.label_dir, self.label_files[self.current_index])
         self.current_label_path = os.path.join(self.label_dir, self.label_files[self.current_index])
@@ -131,7 +133,7 @@ class PolygonViewer(QMainWindow):
         self.drawing_width = self.scaled_image.width()
         self.drawing_height = self.scaled_image.height()
         
-        self.setGeometry(1920, 0, self.screen_width, self.screen_height)
+        self.setGeometry(0, 0, self.screen_width, self.screen_height)
         self.setWindowTitle('Polygon Viewer')
         self.showFullScreen()
         
@@ -400,13 +402,8 @@ class PolygonViewer(QMainWindow):
 
 if __name__ == '__main__':
     try:
-        # fname = "church_20240930-134625"
-        # image_file = f"C:/Users/VEStellaLab/Workspace/Drone/kto_hackerthon/original/" \
-        #              f"{fname.split('_')[-1][4:8]}/{fname.split('_')[0]}/{fname.split('_')[-1]}.jpg"
-        # label_file = parse_polygon_file(f'labels/{fname}.txt')
-        
-        label_dir = "kto_dataset/labels"
-        image_dir = "kto_dataset/images"
+        label_dir = "labels/DOTA-v1.5_val_RESULT"
+        image_dir = "images"
         
         app = QApplication(sys.argv)
         viewer = PolygonViewer(label_dir, image_dir)
@@ -415,5 +412,5 @@ if __name__ == '__main__':
         
     except FileNotFoundError:
         print("Error: Could not find the polygon data file.")
-    except Exception as e:
-        print(f"Error: {str(e)}")
+    # except Exception as e:
+    #     print(f"Error: {str(e)}")

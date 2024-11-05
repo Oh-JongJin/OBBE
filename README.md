@@ -1,2 +1,2 @@
 # OBBE
-Oriented Bounding Boxes Editor
+Oriented Bounding Boxes Label Editor
